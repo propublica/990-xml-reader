@@ -64,7 +64,7 @@ class Filing(object):
             return True
         else: 
             raise FileMissingException(
-                "Filing not available, try downloading with irsx_retrieve [ YEAR ]"
+                "File not found — is your object_id or filepath correct?"
                 )
         
 

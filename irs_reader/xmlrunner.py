@@ -104,10 +104,10 @@ class XMLRunner(object):
                     'keyerrors':result['keyerrors'],
                 })
 
-    def run_filing(self, object_id, verbose=False):
+    def run_filing(self, object_id, verbose=False, filepath=None):
         self.whole_filing_data = []
         self.filing_keyerr_data = []
-        this_filing = Filing(object_id)
+        this_filing = Filing(object_id,filepath=filepath)
         this_filing.process(verbose=verbose)
         this_version = this_filing.get_version()
         if verbose:

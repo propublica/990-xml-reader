@@ -1,9 +1,11 @@
 import argparse
 
 from .filing import Filing
+from .file_utils import validate_object_id
 from .settings import KNOWN_SCHEDULES, IRS_READER_ROOT
 from .xmlrunner import XMLRunner
 from .text_format_utils import *
+import os
 
 
 def get_parser():
@@ -12,7 +14,6 @@ def get_parser():
     parser.add_argument(
         'object_ids',
         metavar='object_ids',
-        type=int,
         nargs='+',
         help='object ids'
     )
@@ -23,6 +24,7 @@ def get_parser():
         const=True, default=False,
         help='Verbose output'
     )
+
     parser.add_argument(
         "--schedule",
         choices=KNOWN_SCHEDULES,
@@ -69,14 +71,24 @@ def run_main(args_read):
     # Use the standardizer that was init'ed by XMLRunner
     standardizer = xml_runner.get_standardizer()
 
-    for object_id in args_read.object_ids:
+    for object_id_ref in args_read.object_ids:
+        # check if this looks like a filepath
+        if object_id_ref.find(".xml")>-1:
+            filepath_split = os.path.split(object_id_ref)
+            object_id = filepath_split[1].split("_")[0]
+            filepath = object_id_ref
+            
+        else:
+            object_id = validate_object_id(object_id_ref)
+            filepath = None
+
         if args_read.verbose:
             print("Processing filing %s" % object_id)
             if args_read.file:
                 print("Printing result to file %s" % args_read.file)
 
         if args_read.list_schedules:
-            this_filing = Filing(object_id)
+            this_filing = Filing(object_id,filepath=filepath)
             this_filing.process()
             print(this_filing.list_schedules())
             return True  # we're done, ignore any other commands
@@ -86,12 +98,14 @@ def run_main(args_read):
                 parsed_filing = xml_runner.run_sked(
                     object_id,
                     args_read.schedule,
-                    verbose=args_read.verbose
+                    verbose=args_read.verbose,
+                    filepath=filepath
                 )
             else:
                 parsed_filing = xml_runner.run_filing(
                     object_id,
-                    verbose=args_read.verbose
+                    verbose=args_read.verbose,
+                    filepath=filepath
                 )
 
         if args_read.format == 'json':

@@ -158,14 +158,14 @@ class XMLRunner(object):
     """
 
 
-    def run_sked(self, object_id, sked, verbose=False):
+    def run_sked(self, object_id, sked, verbose=False,filepath=filepath):
         """
         sked is the proper name of the schedule:
         IRS990, IRS990EZ, IRS990PF, IRS990ScheduleA, etc.
         """
         self.whole_filing_data = []
         self.filing_keyerr_data = []
-        this_filing = Filing(object_id)
+        this_filing = Filing(object_id,filepath=filepath)
         this_filing.process(verbose=verbose)
         this_version = this_filing.get_version()
         if this_version in ALLOWED_VERSIONSTRINGS or ( self.csv_format and this_version in CSV_ALLOWED_VERSIONSTRINGS ):

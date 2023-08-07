@@ -158,7 +158,7 @@ class XMLRunner(object):
     """
 
 
-    def run_sked(self, object_id, sked, verbose=False,filepath=filepath):
+    def run_sked(self, object_id, sked, verbose=False,filepath=None):
         """
         sked is the proper name of the schedule:
         IRS990, IRS990EZ, IRS990PF, IRS990ScheduleA, etc.
